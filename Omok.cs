@@ -11,9 +11,9 @@ namespace Omok
 {
     public partial class OmokForm : Form
     {
-        private int stoneSize = 18;
-        private int gridSize = 20;
-        private int startpointSize = 8;
+        private int stoneSize = 36;
+        private int gridSize = 40;
+        private int startpointSize = 16;
 
         private Graphics g;
         private Pen pen;
@@ -62,20 +62,16 @@ namespace Omok
             if (x < 0 || x > 18 || y < 0 || y > 18)
                 return;
 
-            if (turn)
+
+            if (isDrawable(x, y))
+            {
+                board[x, y] = STONE.none;
                 drawStone(x, y);
+            }
 
             else
-            {
-                if (isDrawable(x, y))
-                {
-                    board[x, y] = STONE.none;
-                    drawStone(x, y);
-                }
+                return;
 
-                else
-                    return;
-            }
         }
 
         private void drawBoard()
@@ -109,10 +105,19 @@ namespace Omok
             else  // 흑돌
                 board[x, y] = STONE.black;
 
-            if (checkForbidden(x, y))
+            if(!turn)
             {
-                board[x, y] = STONE.none;
-                return false;
+                if (checkForbidden(x, y))
+                {
+                    board[x, y] = STONE.none;
+                    return false;
+                }
+
+                else
+                {
+                    board[x, y] = STONE.none;
+                    return true;
+                }
             }
 
             else
@@ -366,7 +371,7 @@ namespace Omok
                     blocker = true;
                     break;
                 }
-            else if (lineCount == 5 && board[i, y] == STONE.none)
+                else if (lineCount == 5 && board[i, y] == STONE.none)
                     break;
 
             if (count - 1 == lineCount)
@@ -386,7 +391,7 @@ namespace Omok
             if (countHorizon(x, y, 5)) // ㅡ
                 finishGame(x, y);
 
-            else if (countVertical(x, y, 5)) // ㅣ 
+            else if (countVertical(x, y, 5)) // ㅣ
                 finishGame(x, y);
 
             else if (countDiagonal_LDRU(x, y, 5)) // X
